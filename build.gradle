@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.openapi.generator' version'7.7.0'
+}
+
+apply plugin: "io.spring.dependency-management"
+apply from: 'database.gradle'
+
+group = 'com.cognitivenode.k8s'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.liquibase:liquibase-core'
+
+    // required for openapi tool chain
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "jakarta.validation:jakarta.validation-api"
+    implementation "org.openapitools:jackson-databind-nullable:0.2.6"
+    implementation "io.swagger:swagger-annotations:1.6.14"
+
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'com.h2database:h2'
+}
+
+test{
+    useJUnitPlatform()
+}
+
+// openapi code generator
+openApiGenerate {
+    // don't try and reuse this variable for sourceSet as reference here is for a directory
+    // and generated code will append files to src/main/java under this directory
+    globalProperties.set([
+            modelDocs: "false",
+            apis: "false",
+            models: "true"
+    ])
+    outputDir.set("${rootDir}/build/generate-sources")
+    inputSpec.set("${rootDir}/src/main/resources/oas/openapi-1.0.0.yaml")
+    modelPackage.set("com.cognitivenode.k8s.contact.store.dto")
+    modelNameSuffix.set("DTO")
+    generatorName.set("spring")
+    library.set("spring-boot")
+    configOptions.put("dateLibrary", "java8")
+
+}
+compileJava.dependsOn tasks.openApiGenerate
+
+// additional source to java compile path
+sourceSets.main.java.srcDir(file("${rootDir}/build/generate-sources/src/main/java"))
+

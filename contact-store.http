@@ -1,0 +1,19 @@
+### List all contacts from the store
+GET localhost:8080/api/contacts
+###
+
+### Add a contact
+POST localhost:8080/api/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Super",
+  "lastName": "Mario",
+  "phoneNumber": "66666666"
+}
+
+### Get a contact
+GET localhost:8080/api/contacts/<id>
+
+### Delete a contact
+DELETE localhost:8080/api/contacts/<id>

@@ -1,0 +1,24 @@
+databaseChangeLog:
+- changeSet:
+    id: 1571178913861-1
+    author: natarajmb (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              primaryKey: true
+              primaryKeyName: contactPK
+            name: id
+            type: UUID
+        - column:
+            name: first_name
+            type: VARCHAR(255)
+        - column:
+            name: last_name
+            type: VARCHAR(255)
+        - column:
+            name: phone_number
+            type: VARCHAR(255)
+        tableName: contact
+

@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:17.0
+    container_name: db
+    environment:
+      - POSTGRES_USER=contact_store
+      - POSTGRES_PASSWORD=contact_store
+      - POSTGRES_DB=contact_store
+    ports:
+      - "5432:5432"

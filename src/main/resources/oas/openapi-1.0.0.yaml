@@ -1,0 +1,144 @@
+openapi: 3.0.0
+info:
+  title: Contact Store
+  description: |
+    This is an handy application to remember your contact list. Build to demonstrate the capabilities of
+    [Swagger](http://swagger.io) and [SpringBoot](https://spring.io/projects/spring-boot)
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: nataraj.basappa@yahoo.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: https://virtserver.swaggerhub.com/natarajmb/ContactStore/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: contact
+  description: Everything about your Contact
+  externalDocs:
+    description: Find out more
+    url: https://en.wikipedia.org/wiki/Contact_list
+paths:
+  /contact:
+    post:
+      tags:
+      - contact
+      summary: Add a new contact
+      operationId: addContact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        405:
+          description: Invalid input
+  /contact/{contactId}:
+    get:
+      tags:
+        - contact
+      summary: Get a contact from the Id
+      description: Returns a contact
+      operationId: getContact
+      parameters:
+        - name: contactId
+          in: path
+          description: Id of contact to get
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        400:
+          description: Invalid contact Id supplied
+        404:
+          description: Contact not found
+    put:
+      tags:
+        - contact
+      summary: Update a contact with the Id
+      description: Returns an updated contact
+      operationId: updateContact
+      parameters:
+        - name: contactId
+          in: path
+          description: Id of contact to get
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        400:
+          description: Invalid contact Id supplied
+        404:
+          description: Contact not found
+    delete:
+      tags:
+        - contact
+      summary: Delete a contact with the Id
+      description: Deletes a contact
+      operationId: deleteContact
+      parameters:
+        - name: contactId
+          in: path
+          description: Id of contact to get
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid contact Id supplied
+        '404':
+          description: User not found
+  /contacts:
+    get:
+      tags:
+      - contact
+      summary: List all contacts
+      description: Returns all contacts in the list
+      operationId: getAllContacts
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+components:
+  schemas:
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phoneNumber:
+          type: string

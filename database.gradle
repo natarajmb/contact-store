@@ -1,0 +1,49 @@
+configurations {
+    liquibaseRuntime
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+dependencies {
+    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:3.8'
+    liquibaseRuntime 'org.postgresql:postgresql:42.2.8'
+}
+
+static def buildTimestamp() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMddHHmmss')
+    return formattedDate
+}
+
+def changeLog = "$projectDir/src/main/resources/db/changelog/changes/" + buildTimestamp() + "_changelog.yaml"
+def modelPackage = "dev.cloudnative.contact.store.model"
+def dialect = "org.hibernate.dialect.PostgreSQL9Dialect"
+def driver = "org.postgresql.Driver"
+
+tasks.register('diffLocalPgSQL', JavaExec) {
+    group = "Helper"
+    description "Generates a diff from local PostgresSQL database against modified model classes"
+
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.liquibaseRuntime
+    mainClass = "liquibase.integration.commandline.Main"
+
+    args "--changeLogFile=" + changeLog
+    args "--referenceUrl=hibernate:spring:" + modelPackage + "?dialect=" + dialect
+    args "--username=${System.getenv('SPRING_DATASOURCE_USERNAME')}"
+    args "--password=${System.getenv('SPRING_DATASOURCE_PASSWORD')}"
+    args "--url=${System.getenv('SPRING_DATASOURCE_URL')}"
+    args "--driver=" + driver
+    args "diffChangeLog"
+}
+
+tasks.register('initLocalPgSQL', Exec) {
+    group "Helper"
+    description "Initialises the PostgresSQL database for first use"
+    workingDir "$projectDir"
+    commandLine 'script/db_init.sh'
+}
